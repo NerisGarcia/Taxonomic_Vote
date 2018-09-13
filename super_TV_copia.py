@@ -240,7 +240,6 @@ def genes_unicos(dBlast, gff_file, sample_name):
     for line in gff:
         # primero miramos los CDS (genes identificados con UbiprotKB, HAMAP o Hypothetical Proteins)
         if "CDS" in line:
-
             if "UniProtKB" in line:
                 # Miramos si esta en el dict
                 UniprotGeneID = "UniProtKB:" + str(
@@ -249,9 +248,7 @@ def genes_unicos(dBlast, gff_file, sample_name):
                     dict[UniprotGeneID] = 1
                 else:
                     dict[UniprotGeneID] = int(dict[UniprotGeneID]) + 1
-
-                    # Creamos la lista con la info
-
+                    # List with info
                 nlist = []
                 # Uniprot
                 nlist.append(UniprotGeneID)
@@ -263,8 +260,6 @@ def genes_unicos(dBlast, gff_file, sample_name):
                 nlist.append(line.split("\t")[0])
                 nlist.append(line.split("\t")[3])
                 nlist.append(line.split("\t")[4])
-
-                # datos blast desde dBlast
                 if ProkkageneID in dBlast:
                     nlist.append(
                         (dBlast[line.split(";")[0].split("=")[1]])[1])
@@ -272,19 +267,13 @@ def genes_unicos(dBlast, gff_file, sample_name):
                         (dBlast[line.split(";")[0].split("=")[1]])[2])
                     nlist.append(
                         (dBlast[line.split(";")[0].split("=")[1]])[10:])
-
                 list.append(nlist)
-
-
-
             elif "HAMAP" in line:
                 hamap = "HAMAP" + str(line.split("HAMAP")[1].split(";")[0])
-
                 if hamap not in dict:
                     dict[hamap] = 1
                 else:
                     dict[hamap] = int(dict[hamap]) + 1
-
                 # list.append()#gen
                 # print line.split("UniProtKB")[1].split(";")[0][1:]
                 nlist = []
@@ -296,16 +285,12 @@ def genes_unicos(dBlast, gff_file, sample_name):
                 nlist.append(line.split("\t")[0])
                 nlist.append(line.split("\t")[3])
                 nlist.append(line.split("\t")[4])
-
-                # datos blast desde dBlast
+                # dBlast data
                 if ProkkageneID in dBlast:
                     nlist.append(dBlast[ProkkageneID][1])
                     nlist.append(dBlast[ProkkageneID][2])
                     nlist.append(dBlast[ProkkageneID][10:])
-
                 list.append(nlist)
-
-
             elif "hypothetical protein" in line:
                 HP += 1
                 HP_Name = "Hypothetical protein " + str(HP)
@@ -328,16 +313,13 @@ def genes_unicos(dBlast, gff_file, sample_name):
                     nlist.append(dBlast[ProkkageneID][2])
                     nlist.append(dBlast[ProkkageneID][10:])
                 list.append(nlist)
-
-                # Si no es un CDS es porque es rRNA o tRNA
+                #I f it is not CDS its and rRNA or a tRNA
         elif "barrnap" in line:  # rRNA
             barrnap = line.split("product=")[1][:-1]
-
             if barrnap not in dict:
                 dict[barrnap] = 1
             else:
                 dict[barrnap] = dict[barrnap] + 1
-
             nlist = []
             nlist.append(barrnap)
             nlist.append("rRNA")
@@ -347,22 +329,18 @@ def genes_unicos(dBlast, gff_file, sample_name):
             nlist.append(line.split("\t")[0])
             nlist.append(line.split("\t")[3])
             nlist.append(line.split("\t")[4])
-
             # datos blast desde dBlast
             if ProkkageneID in dBlast:
                 nlist.append(dBlast[ProkkageneID][1])
                 nlist.append(dBlast[ProkkageneID][2])
                 nlist.append(dBlast[ProkkageneID][10:])
-
             list.append(nlist)
-
         elif "Aragorn" in line:  # tRNA
             Aragorn = line.split("product=")[1][:-1]
             if Aragorn not in dict:
                 dict[Aragorn] = 1
             else:
                 dict[Aragorn] = dict[Aragorn] + 1
-
             nlist = []
             nlist.append(Aragorn)
             if "tmRNA" in line:  # Puede haber tmRNA
@@ -371,20 +349,15 @@ def genes_unicos(dBlast, gff_file, sample_name):
                 nlist.append("tRNA")
             ProkkageneID = line.split(";")[0].split("=")[1]
             nlist.append(ProkkageneID)
-            # contig
             nlist.append(line.split("\t")[0])
             nlist.append(line.split("\t")[3])
             nlist.append(line.split("\t")[4])
-
-            # datos blast desde dBlast
+            # dLAST data
             if ProkkageneID in dBlast:
                 nlist.append(dBlast[ProkkageneID][1])
                 nlist.append(dBlast[ProkkageneID][2])
                 nlist.append(dBlast[ProkkageneID][10:])
-
             list.append(nlist)
-
-    # Para imprimir lo anterior en pantalla
     out.write(
         "DataBase:ID\tRepetitions\tProduct\tPROKKA gene ID\tContig\tend"
         "\tstart\tpident\tlength\tbitscore\tkingdom\tphylum\tclass\torder"
@@ -396,7 +369,6 @@ def genes_unicos(dBlast, gff_file, sample_name):
                     lista[1:]).replace("[", "").replace("\\n", "").replace(
                     "]", "").replace("\'", "").replace(",", "\t") + "\n"
                 out.write(txt)
-
     gff.close()
     # print list
 
@@ -434,15 +406,13 @@ def main(argv):
     blast_filered_file = sample_name + "_filtered.txt"
     blast2taxonomy(blast_filered_file, db_file, sample_name)
 
-    # Para ordenar el fichero necesitamos una copia
+    # To order the file, we have to copy the file
     blast_filered_tax_file_name = sample_name + "_filtered_tax"
-
     blast_filered_tax_file2 = sample_name + "_filtered_tax2"
     shutil.copy(blast_filered_tax_file_name, blast_filered_tax_file2)
-
     blast_filered_tax_file = open(blast_filered_tax_file_name, "w")
 
-    # Ordenamos el fochero
+    # Order file
     reader = csv.reader(open(blast_filered_tax_file2), delimiter="\t")
     for line in sorted(reader, key=operator.itemgetter(0)):
         cat = ""
@@ -450,42 +420,16 @@ def main(argv):
             cat += str(elemento) + "\t"
         cat += "\n"
         blast_filered_tax_file.write(cat)
-
     blast_filered_tax_file.close()
     os.remove(blast_filered_tax_file2)
 
-    #   ELIMINAR COLUMNA DE MAS
-    # abrimos el fichero con los resultados de  blast
+    #  Remove column
+    # Open BLAST results
     shutil.copy(blast_filered_tax_file_name, "blast_file_addfinalgene")
     blast_file = open("blast_file_addfinalgene", "a")
     blast_file.write("Hyh2FghGH254kjuiIF5FJKJsgf31dFJ")
     blast_file.close()
     blast_file = open("blast_file_addfinalgene", "r")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     dhits = taxonomic_vote(blast_file, sample_name)
     os.remove("blast_file_addfinalgene")
 
